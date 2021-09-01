@@ -12,7 +12,7 @@ class OrtalamaBilgileri extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(derssayisi > 0 ? "$derssayisi tane ders eklendi" : "Ders Ekleyin",

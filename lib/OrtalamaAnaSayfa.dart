@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ortalama_hesaplama/Liste_Modeli/ders.dart';
 import 'package:flutter_ortalama_hesaplama/ders_listesi.dart';
+import 'package:flutter_ortalama_hesaplama/hard_degeri.dart';
+import 'package:flutter_ortalama_hesaplama/kredi_degeri.dart';
 import 'data/harf_detasi.dart';
 import 'package:flutter_ortalama_hesaplama/ortalama_goster.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,9 +16,9 @@ class OrtalamaAnaSayfa extends StatefulWidget {
 }
 
 var formKey = GlobalKey<FormState>();
+double buildKredilerSecilen = 1.0;
 double secilen = 1;
 double buildHarflerSecilen = 4.0;
-double buildKredilerSecilen = 1.0;
 String Kullanicinin_girdigi_ders = "";
 
 class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
@@ -37,34 +39,34 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _ilkSatir(),
-            Expanded(child: DerslerinListesi()),
+            Expanded(child: DerslerinListesi(onDeletedLesson: (index) {
+              DataHelper.EklenenDersler.removeAt(index);
+              print("Elemen cikti $index");
+              setState(() {});
+            })),
           ],
         ));
   }
 
   Widget _ilkSatir() {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Container(
-          decoration:
-              BoxDecoration(border: Border(bottom: BorderSide(width: 2))),
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildForm(),
-                flex: 2,
+      child: Container(
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 2))),
+        child: Row(
+          children: [
+            Expanded(
+              child: _buildForm(),
+              flex: 2,
+            ),
+            Expanded(
+              child: Container(
+                child: OrtalamaBilgileri(
+                    ortalama: DataHelper.ortalamHesapla(),
+                    derssayisi: DataHelper.EklenenDersler.length),
               ),
-              Expanded(
-                child: Container(
-                  child: OrtalamaBilgileri(
-                      ortalama: DataHelper.ortalamHesapla(),
-                      derssayisi: DataHelper.EklenenDersler.length),
-                ),
-                flex: 1,
-              ),
-            ],
-          ),
+              flex: 1,
+            ),
+          ],
         ),
       ),
     );
@@ -74,34 +76,38 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
     return Form(
         key: formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 3),
               child: _buildTextForm(),
             ),
             SizedBox(
               height: 15,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                     ),
-                    child: _buildHarfler(),
+                    child: HarfDegeri(onHarfDegeri: (gelen_harf_index) {
+                      buildHarflerSecilen = gelen_harf_index;
+                    }),
                   ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                    ),
-                    child: _buildKrediler(),
-                  ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                      ),
+                      child: Kredi_Degeri_Widget(
+                          onKrediDegeri: (gelen_kredi_degeri) {
+                        buildKredilerSecilen = gelen_kredi_degeri;
+                      })),
                 ),
                 IconButton(
                     onPressed: _dersOrtalamaHesaplama,
@@ -135,66 +141,6 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
         hintText: Sabit.TextFormField_text,
         hintStyle: TextStyle(color: Colors.black),
         border: OutlineInputBorder(borderRadius: Sabit.border_style),
-      ),
-    );
-  }
-
-  Widget _buildHarfler() {
-    /*
-
-  Normal Şartlarda  DropdownButton özelleştirilmesi biraz zor olabilir.
-  Bunun için Container ile bunu sarmalayalım.
-
-    */
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Sabit.Material_color.shade100.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: DropdownButton<double>(
-          items: DataHelper.tumDersHarfleri(),
-          underline: Container(),
-          onChanged: (dd) {
-            setState(() {
-              buildHarflerSecilen = dd!;
-              print(buildHarflerSecilen);
-            });
-          },
-          value: buildHarflerSecilen,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildKrediler() {
-    /*
-
-  Normal Şartlarda  DropdownButton özelleştirilmesi biraz zor olabilir.
-  Bunun için Container ile bunu sarmalayalım.
-
-    */
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Sabit.Material_color.shade100.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: DropdownButton<double>(
-          items: DataHelper.tumKrediler(),
-          underline: Container(),
-          onChanged: (vv) {
-            setState(() {
-              buildKredilerSecilen = vv!;
-              print(buildKredilerSecilen);
-            });
-          },
-          value: buildKredilerSecilen,
-        ),
       ),
     );
   }

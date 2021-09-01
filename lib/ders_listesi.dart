@@ -3,14 +3,11 @@ import 'package:flutter_ortalama_hesaplama/Constant/sabit.dart';
 import 'package:flutter_ortalama_hesaplama/Liste_Modeli/ders.dart';
 import 'package:flutter_ortalama_hesaplama/data/harf_detasi.dart';
 
-class DerslerinListesi extends StatefulWidget {
-  DerslerinListesi({Key? key}) : super(key: key);
+class DerslerinListesi extends StatelessWidget {
+  final Function onDeletedLesson;
+  const DerslerinListesi({required this.onDeletedLesson, Key? key})
+      : super(key: key);
 
-  @override
-  _DerslerinListesiState createState() => _DerslerinListesiState();
-}
-
-class _DerslerinListesiState extends State<DerslerinListesi> {
   @override
   Widget build(BuildContext context) {
     List<Ders> tumDersler = DataHelper.EklenenDersler;
@@ -22,9 +19,7 @@ class _DerslerinListesiState extends State<DerslerinListesi> {
                 key: UniqueKey(),
                 direction: DismissDirection.startToEnd,
                 onDismissed: (e) {
-                  DataHelper.EklenenDersler.removeAt(index);
-                  DataHelper.ortalamHesapla();
-                  setState(() {});
+                  onDeletedLesson(index);
                 },
                 child: Card(
                   child: ListTile(
