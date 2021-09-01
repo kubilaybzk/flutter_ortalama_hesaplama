@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ortalama_hesaplama/data_creater.dart';
+import 'package:flutter_ortalama_hesaplama/Liste_Modeli/ders.dart';
+import 'package:flutter_ortalama_hesaplama/ders_listesi.dart';
+import 'data/harf_detasi.dart';
 import 'package:flutter_ortalama_hesaplama/ortalama_goster.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ortalama_hesaplama/Constant/sabit.dart';
@@ -15,6 +17,7 @@ var formKey = GlobalKey<FormState>();
 double secilen = 1;
 double buildHarflerSecilen = 4.0;
 double buildKredilerSecilen = 1.0;
+String Kullanicinin_girdigi_ders = "";
 
 class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
   @override
@@ -34,14 +37,7 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _ilkSatir(),
-            SizedBox(
-              height: 2,
-            ),
-            Container(
-              height: 400,
-              width: 400,
-              color: Colors.red,
-            ),
+            Expanded(child: DerslerinListesi()),
           ],
         ));
   }
@@ -49,15 +45,10 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
   Widget _ilkSatir() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Container(
-          decoration: BoxDecoration(
-              border: Border(
-            top: BorderSide(width: 8.0, color: Color(0xFFDFDFDF)),
-            left: BorderSide(width: 8.0, color: Color(0xFFDFDFDF)),
-            right: BorderSide(width: 8.0, color: Color(0xFF7F7F7F)),
-            bottom: BorderSide(width: 8.0, color: Color(0xFF7F7F7F)),
-          )),
+          decoration:
+              BoxDecoration(border: Border(bottom: BorderSide(width: 2))),
           child: Row(
             children: [
               Expanded(
@@ -66,7 +57,9 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
               ),
               Expanded(
                 child: Container(
-                  child: OrtalamaBilgileri(ortalama: 0, derssayisi: 1),
+                  child: OrtalamaBilgileri(
+                      ortalama: DataHelper.ortalamHesapla(),
+                      derssayisi: DataHelper.EklenenDersler.length),
                 ),
                 flex: 1,
               ),
@@ -111,7 +104,7 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
                   ),
                 ),
                 IconButton(
-                    onPressed: () {},
+                    onPressed: _dersOrtalamaHesaplama,
                     icon: Icon(
                       Icons.arrow_forward_ios_sharp,
                       size: 24,
@@ -124,6 +117,18 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
 
   Widget _buildTextForm() {
     return TextFormField(
+      onSaved: (k_girdigi) {
+        setState(() {
+          Kullanicinin_girdigi_ders = k_girdigi!;
+        });
+      },
+      validator: (k_girdi) {
+        if (k_girdi!.length <= 0) {
+          return "Ders Adını Yazın";
+        } else {
+          return null;
+        }
+      },
       decoration: InputDecoration(
         filled: true,
         fillColor: Sabit.Material_color.shade100.withOpacity(0.2),
@@ -192,5 +197,19 @@ class _OrtalamaAnaSayfaState extends State<OrtalamaAnaSayfa> {
         ),
       ),
     );
+  }
+
+  void _dersOrtalamaHesaplama() {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+      var EklenenDers = Ders(
+          Kullanicinin_girdigi_ders, buildKredilerSecilen, buildHarflerSecilen);
+      print(EklenenDers);
+      DataHelper.ders_ekle(EklenenDers);
+      print(DataHelper.EklenenDersler);
+      print("Ortalama");
+      print(DataHelper.ortalamHesapla());
+      setState(() {});
+    }
   }
 }

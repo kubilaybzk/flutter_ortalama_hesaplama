@@ -17,7 +17,8 @@ class OrtalamaBilgileri extends StatelessWidget {
       children: [
         Text(derssayisi > 0 ? "$derssayisi tane ders eklendi" : "Ders Ekleyin",
             style: Sabit.derssayisi_style),
-        Text("${ortalama.toStringAsFixed(2)}", style: Sabit.ortalama_number),
+        Text(ortalama >= 0 ? "${ortalama.toStringAsFixed(2)}" : "0",
+            style: Sabit.ortalama_number),
         Text("Ortalamanız", style: Sabit.ortalama_goster_sabit)
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ortalama_hesaplama/Liste_Modeli/ders.dart';
 
 class DataHelper {
   static List<String> _createDersHarfNotlari() {
@@ -61,5 +62,21 @@ class DataHelper {
               value: e.toDouble(),
             ))
         .toList();
+  }
+
+  static List<Ders> EklenenDersler = [];
+
+  static ders_ekle(Ders gelen) {
+    EklenenDersler.add(gelen);
+  }
+
+  static double ortalamHesapla() {
+    double ToplamNot = 0;
+    double ToplamKredi = 0;
+    EklenenDersler.forEach((element) {
+      ToplamNot = ToplamKredi + (element.harf_notu * element.ders_kredi);
+      ToplamKredi = element.ders_kredi;
+    });
+    return ToplamNot / ToplamKredi;
   }
 }
